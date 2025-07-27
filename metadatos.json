@@ -1,0 +1,6 @@
+{
+  "name": "Global Tech Feed",
+  "description": "An application that displays the latest tech news from around the world and translates English articles to Spanish using the Gemini API.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}

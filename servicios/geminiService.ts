@@ -1,9 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Article } from '../types';
 
-// La clave de API DEBE ser proporcionada a través de la variable de entorno `process.env.API_KEY`.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const translationSchema = {
   type: Type.OBJECT,
   properties: {
@@ -40,8 +37,9 @@ const newsSchema = {
   },
 };
 
-export const fetchLatestTechNews = async (): Promise<Omit<Article, 'url'>[]> => {
+export const fetchLatestTechNews = async (apiKey: string): Promise<Omit<Article, 'url'>[]> => {
     try {
+        const ai = new GoogleGenAI({ apiKey });
         const prompt = `Act as a tech news aggregator. Generate a list of 10 recent and realistic-sounding tech news articles from the last week. 
         For each article, provide a unique integer ID, a title, a short summary, a longer full content (at least 3 paragraphs), a plausible source (e.g., The Verge, TechCrunch, Wired, Xataka), a placeholder image URL from picsum.photos in the format https://picsum.photos/seed/UNIQUE_SEED/600/400, and the language of the article ('en' for English or 'es' for Spanish).
         Ensure the articles are diverse and cover topics like AI, hardware, software, and tech policy. At least 3 of the articles must be generated in perfect Spanish. The rest must be in English.
@@ -67,12 +65,13 @@ export const fetchLatestTechNews = async (): Promise<Omit<Article, 'url'>[]> => 
 
     } catch (error) {
         console.error("Error fetching latest tech news from Gemini:", error);
-        throw new Error("No se pudieron generar las noticias. Verifica la configuración de la API Key o el estado del servicio de Google AI.");
+        throw new Error("No se pudieron generar las noticias. Verifica que tu API Key sea correcta o el estado del servicio de Google AI.");
     }
 }
 
-export const translateArticleToSpanish = async (article: Article): Promise<{ title: string; summary: string; fullContent: string; }> => {
+export const translateArticleToSpanish = async (apiKey: string, article: Article): Promise<{ title: string; summary: string; fullContent: string; }> => {
   try {
+    const ai = new GoogleGenAI({ apiKey });
     const prompt = `Translate the following article title, summary, and full content to Spanish. Provide the response as a JSON object with 'title', 'summary', and 'fullContent' keys.
 
     Original Title: "${article.title}"
